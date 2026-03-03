@@ -3,7 +3,9 @@ package com.kotlinspring.controller
 import com.kotlinspring.dto.CourseDTO
 import com.kotlinspring.entity.Course
 import com.kotlinspring.service.CourseService
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -16,11 +18,12 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/v1/courses")
+@Validated
 class CourseController(val courseService: CourseService) {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun addCourse(@RequestBody courseDTO: CourseDTO): CourseDTO {
+    fun addCourse(@Valid @RequestBody courseDTO: CourseDTO): CourseDTO {
         return courseService.addCourse(courseDTO)
     }
 
@@ -28,7 +31,7 @@ class CourseController(val courseService: CourseService) {
     fun retrieveAllCourses(): List<CourseDTO> = courseService.retrieveAllCourses()
 
     @PutMapping("/{id}")
-    fun updateCourse(@RequestBody courseDTO: CourseDTO, @PathVariable("id") id: Int): CourseDTO = courseService.updateCourse(courseDTO, id)
+    fun updateCourse(@Valid @RequestBody courseDTO: CourseDTO, @PathVariable("id") id: Int): CourseDTO = courseService.updateCourse(courseDTO, id)
 
     @DeleteMapping("/{id}")
     fun deleteCourse(@PathVariable id: Int) = courseService.deleteCourse(id)
