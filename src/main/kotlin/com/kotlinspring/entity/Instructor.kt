@@ -1,10 +1,6 @@
 package com.kotlinspring.entity
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "Instructors")
@@ -12,5 +8,12 @@ data class Instructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int?,
-    var name: String
+    var name: String,
+    @OneToMany(
+        mappedBy = "instructor",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    var courses: List<Course> =mutableListOf()
 )
