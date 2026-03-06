@@ -5,13 +5,14 @@ import com.kotlinspring.entity.Instructor
 import com.kotlinspring.repository.InstructorRepository
 import mu.KLogging
 import org.springframework.stereotype.Service
+import java.util.Optional
 
 @Service
 class InstructorService(val instructorRepository: InstructorRepository) {
 
-    companion object: KLogging()
+    companion object : KLogging()
 
-//    Create Instructor
+    //    Create Instructor
     fun createInstructor(instructorDTO: InstructorDTO): InstructorDTO {
         val instructor: Instructor = instructorDTO.let {
             Instructor(null, it.name)
@@ -22,7 +23,11 @@ class InstructorService(val instructorRepository: InstructorRepository) {
         instructorRepository.save(instructor);
 
         return instructor.let {
-            InstructorDTO(null, it.name)
+            InstructorDTO(it.id, it.name)
         }
+    }
+
+    fun findByInstructorId(instructorId: Int): Optional<Instructor> {
+        return instructorRepository.findById(instructorId)
     }
 }

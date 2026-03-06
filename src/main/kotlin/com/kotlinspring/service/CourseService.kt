@@ -7,14 +7,22 @@ import mu.KLogging
 import org.springframework.stereotype.Service
 
 @Service
-class CourseService(val courseRepository: CourseRepository) {
+class CourseService(val courseRepository: CourseRepository, val instructorService: InstructorService) {
 
     companion object : KLogging()
 
     //    adding courses to the database
     fun addCourse(courseDTO: CourseDTO): CourseDTO {
+
+        val instructorOptional = instructorService.findByInstructorId(courseDTO.instructorId!!)
+
+        if (!instructorOptional.isPresent) {
+            logger.error("Instructor with id ${courseDTO.instructorId} not found")
+            throw NoSuchElementException("Instructor with id ${courseDTO.instructorId} not found")
+        }
+
         val course: Course = courseDTO.let {
-            Course(null, it.name, it.category)
+            Course(null, it.name, it.category, instructorOptional.get())
         }
 
         courseRepository.save(course)
@@ -35,7 +43,7 @@ class CourseService(val courseRepository: CourseRepository) {
 
         return courses
             .map {
-                CourseDTO(it.id, it.name, it.category)
+                CourseDTO(it.id, it.name, it.category, it.instructor?.id)
             }
     }
 
