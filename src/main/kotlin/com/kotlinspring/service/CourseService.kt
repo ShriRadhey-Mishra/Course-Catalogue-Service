@@ -2,9 +2,12 @@ package com.kotlinspring.service
 
 import com.kotlinspring.dto.CourseDTO
 import com.kotlinspring.entity.Course
+import com.kotlinspring.entity.Instructor
 import com.kotlinspring.repository.CourseRepository
 import mu.KLogging
 import org.springframework.stereotype.Service
+import java.util.Optional
+import kotlin.text.category
 
 @Service
 class CourseService(val courseRepository: CourseRepository, val instructorService: InstructorService) {
@@ -14,23 +17,26 @@ class CourseService(val courseRepository: CourseRepository, val instructorServic
     //    adding courses to the database
     fun addCourse(courseDTO: CourseDTO): CourseDTO {
 
-        val instructorOptional = instructorService.findByInstructorId(courseDTO.instructorId!!)
+        val instructorId = courseDTO.instructorId
+            ?: throw IllegalArgumentException("InstructorId must not be null")
 
-        if (!instructorOptional.isPresent) {
-            logger.error("Instructor with id ${courseDTO.instructorId} not found")
-            throw NoSuchElementException("Instructor with id ${courseDTO.instructorId} not found")
-        }
+        val instructor = instructorService.findInstructorById(instructorId)
 
-        val course: Course = courseDTO.let {
-            Course(null, it.name, it.category, instructorOptional.get())
-        }
+        val course = Course(
+            id = null,
+            name = courseDTO.name,
+            category = courseDTO.category,
+            instructor = instructor
+        )
 
-        courseRepository.save(course)
+        val savedCourse = courseRepository.save(course)
 
-        logger.info("Course added: $course")
-        return course.let {
-            CourseDTO(it.id, it.name, it.category)
-        }
+        return CourseDTO(
+            savedCourse.id,
+            savedCourse.name,
+            savedCourse.category,
+            savedCourse.instructor?.id
+        )
     }
 
     //    retrieving all the courses from the database

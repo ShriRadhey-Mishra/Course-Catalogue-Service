@@ -27,7 +27,8 @@ class InstructorService(val instructorRepository: InstructorRepository) {
         }
     }
 
-    fun findByInstructorId(instructorId: Int): Optional<Instructor> {
-        return instructorRepository.findById(instructorId)
+    fun findInstructorById(id: Int): Instructor {
+        return instructorRepository.findById(id)
+            .orElseThrow { RuntimeException("Instructor not found") }
     }
 }

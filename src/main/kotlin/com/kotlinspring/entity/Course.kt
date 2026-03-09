@@ -13,11 +13,11 @@ import jakarta.persistence.ManyToOne
 @Table(name = "courses")
 data class Course(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int?,
     var name: String,
     var category: String,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id", nullable = false)
-    val instructor: Instructor? = null
+    val instructor: Instructor
 )
